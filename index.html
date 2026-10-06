@@ -37,7 +37,7 @@
   /* jewel-case frame */
   .case {
     position: relative; width: min(94vw, 470px); margin: 24px 0;
-    padding: 44px 26px 34px; min-height: 560px;
+    padding: 44px 26px 34px; min-height: 620px;
     border: 2px solid var(--glass); border-radius: 12px;
     background:
       radial-gradient(circle at 50% 52%, transparent 0 34px, rgba(255,255,255,.08) 35px 36px, transparent 37px 120px, rgba(255,255,255,.07) 121px 122px, transparent 123px),
@@ -93,14 +93,16 @@
 
   .hint { position: relative; z-index: 3; margin-top: 8px; text-align: center; font-size: 13px; color: var(--blush); opacity: .85; }
 
-  /* little references (edit the text in REFS below) */
-  .ref { z-index: 1; max-width: 138px; padding: 12px 14px 14px; font-size: 12px; line-height: 1.35; box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
-  .ref.a { left: 14px; bottom: 120px; background: #ecd3b4; color: #5d4332; transform: rotate(-5deg);
+  /* little postage scraps (phrases live in PHRASES below) */
+  .refs { position: absolute; left: 14px; right: 14px; bottom: 16px; z-index: 1; display: flex; align-items: flex-end; gap: 8px; }
+  .ref { flex: 1 1 0; min-width: 0; padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
+  .ref.long { font-size: 10.5px; }
+  .ref.a { background: #ecd3b4; color: #5d4332; transform: rotate(-4deg); margin-bottom: 14px;
     clip-path: polygon(0 4%, 8% 0, 20% 4%, 35% 0, 52% 4%, 70% 0, 86% 4%, 100% 1%, 99% 50%, 100% 97%, 82% 100%, 60% 96%, 40% 100%, 18% 96%, 0 100%, 1% 50%); }
-  .ref.b { right: 14px; bottom: 210px; background: var(--blush); color: var(--wine); transform: rotate(4deg); border-radius: 2px; }
+  .ref.b { position: relative; background: var(--blush); color: var(--wine); transform: rotate(3deg); border-radius: 2px; }
   .ref.b::before { content: ""; position: absolute; left: 50%; top: -9px; width: 46px; height: 16px; margin-left: -23px; background: rgba(243,230,211,.7); transform: rotate(-3deg); }
-  .ref.c { left: 22px; bottom: 28px; background: var(--ink); color: var(--paper); border: 1px solid var(--blush); transform: rotate(3deg); }
-  .done .ref { display: none; }
+  .ref.c { background: var(--ink); color: var(--paper); border: 1px solid var(--blush); transform: rotate(-2deg); margin-bottom: 22px; }
+  .done .refs { display: none; }
 
   /* cutout pops up */
   .me { display: none; position: absolute; z-index: 4; left: 46%; bottom: -4px; width: auto; height: auto; max-height: 310px; max-width: 90%; transform: translateX(-50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
@@ -117,7 +119,6 @@
     display: inline-block; margin-top: 20px; padding: 12px 18px; background: var(--paper); color: var(--wine);
     transform: rotate(-2deg); box-shadow: 3px 5px 10px rgba(0,0,0,.5); font-size: 15px;
   }
-  .case.done { min-height: 620px; }
   .done .stage, .done .buttons, .done .hint { display: none; }
   .done .reply { display: block; animation: slap .45s cubic-bezier(.2, 1.6, .4, 1); }
   @keyframes slap { from { transform: scale(1.5) rotate(-6deg); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -129,7 +130,7 @@
   @media (max-width: 420px) {
     .l { font-size: 32px; } .line.big .l { font-size: 44px; }
     .stamp { width: 96px; height: 118px; font-size: 10px; }
-    .ref { max-width: 120px; font-size: 10px; }
+    .ref { font-size: 10px; padding: 9px 9px 11px; } .ref.long { font-size: 9.5px; }
     .cat { width: 76px; }
   }
   @media (prefers-reduced-motion: reduce) { .bit { display: none; } .done .reply, .done .me, .done .cat { animation: none; } }
@@ -140,7 +141,7 @@
     <div class="piece tag">for Daniel</div>
 
     <div class="piece stamp" aria-hidden="true">
-      <div>see you in</div>
+      <div>see him in</div>
       <svg viewBox="0 0 24 24"><path fill="#c8325a" d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z"/></svg>
       <div id="cdDays" class="cd-days">--</div>
       <div id="cdTime" class="cd-time">--:--:--</div>
@@ -176,18 +177,34 @@
   const PHOTOS = ["me.webp", "me2.webp", "me3.webp", "wink.webp", "glasses.webp"];
   document.querySelector(".me").src = PHOTOS[Math.floor(Math.random() * PHOTOS.length)];
 
-  /* ---- little references: put your inside jokes here ---- */
-  const REFS = [
-    { cls: "a", text: "Pipe down handsome, you might get cracked." },
-    { cls: "b", text: "Congrats on your big penis!" },
-    { cls: "c", text: "May I bounce on it, perchance." },
+  /* ---- postage scraps: 3 random phrases from this list each time the page loads ---- */
+  const PHRASES = [
+    "Pipe down handsome, you might get cracked.",
+    "Congrats on your big penis!",
+    "May I bounce on it, perchance.",
+    "I'm not a waitress but ill take your tip",
+    "dont be hard on yourself, be hard in me instead.",
+    "calling me pretty gets you head btw",
+    "I may not see you everyday but i love you everyday",
+    "I will always be grateful to have you in my life",
+    "your face is so kissable",
+    "iloveyou iloveyou iloveyou",
+    "thankyou for making me smile everyday",
   ];
-  REFS.forEach(r => {
+  const pool = [...PHRASES];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const scraps = document.createElement("div");
+  scraps.className = "refs";
+  pool.slice(0, 3).forEach((text, i) => {
     const d = document.createElement("div");
-    d.className = "piece ref " + r.cls;
-    d.textContent = r.text;
-    document.getElementById("case").appendChild(d);
+    d.className = "ref " + "abc"[i] + (text.length > 42 ? " long" : "");
+    d.textContent = text;
+    scraps.appendChild(d);
   });
+  document.getElementById("case").appendChild(scraps);
 
   /* ---- countdown to the next visit (edit here) ---- */
   const MEET = { tz: "America/Chicago", day: 3, hour: 17, minute: 0 }; /* day: 0=Sun ... 3=Wed ... 6=Sat */
