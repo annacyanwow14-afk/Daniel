@@ -53,12 +53,14 @@
   /* collage pieces */
   .piece { position: absolute; }
   .stamp {
-    top: 14px; right: 16px; width: 92px; height: 112px; transform: rotate(5deg);
-    background: #f2b7ae; padding: 12px; color: var(--wine); text-align: center;
+    top: 14px; right: 14px; width: 108px; height: 128px; transform: rotate(5deg);
+    background: #f2b7ae; padding: 12px 10px; color: var(--wine); text-align: center;
     font-size: 11px; line-height: 1.1;
   }
   .stamp::before { content: ""; position: absolute; inset: 0; border: 6px dotted #1e0c18; }
-  .stamp svg { width: 46px; height: 46px; display: block; margin: 6px auto 4px; }
+  .stamp svg { width: 34px; height: 34px; display: block; margin: 5px auto 4px; }
+  .cd-days { font-size: 15px; font-weight: 700; }
+  .cd-time { font-size: 12px; letter-spacing: .5px; margin-top: 2px; }
   .tag {
     left: 22px; top: 22px; background: var(--paper); color: var(--ink); padding: 6px 12px;
     font-size: 12px; transform: rotate(-6deg); border-radius: 2px;
@@ -124,7 +126,7 @@
 
   @media (max-width: 420px) {
     .l { font-size: 32px; } .line.big .l { font-size: 44px; }
-    .stamp { width: 78px; height: 96px; }
+    .stamp { width: 96px; height: 118px; font-size: 10px; }
     .ref { max-width: 120px; font-size: 10px; }
     .cat { width: 76px; }
   }
@@ -136,9 +138,10 @@
     <div class="piece tag">for Daniel</div>
 
     <div class="piece stamp" aria-hidden="true">
-      <div>postage paid</div>
+      <div>see you in</div>
       <svg viewBox="0 0 24 24"><path fill="#c8325a" d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z"/></svg>
-      <div>20c</div>
+      <div id="cdDays" class="cd-days">--</div>
+      <div id="cdTime" class="cd-time">--:--:--</div>
     </div>
 
     <section class="stage">
@@ -179,6 +182,30 @@
     d.textContent = r.text;
     document.getElementById("case").appendChild(d);
   });
+
+  /* ---- countdown to the next visit (edit here) ---- */
+  const MEET = { tz: "America/Chicago", day: 3, hour: 17, minute: 0 }; /* day: 0=Sun ... 3=Wed ... 6=Sat */
+  const fmt = new Intl.DateTimeFormat("en-US", { timeZone: MEET.tz, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+  function zoned(ms) { const o = {}; fmt.formatToParts(ms).forEach(p => o[p.type] = p.value); return o; }
+  function offsetAt(ms) { const o = zoned(ms); return Date.UTC(+o.year, o.month - 1, +o.day, +o.hour, +o.minute, +o.second) - Math.floor(ms / 1000) * 1000; }
+  function wallToInstant(y, m, d, h, mi) { const g = Date.UTC(y, m, d, h, mi); let t = g - offsetAt(g); t = g - offsetAt(t); return t; }
+  function nextMeet(now) {
+    const o = zoned(now);
+    for (let i = 0; i <= 7; i++) {
+      const c = new Date(Date.UTC(+o.year, o.month - 1, +o.day + i));
+      const t = wallToInstant(c.getUTCFullYear(), c.getUTCMonth(), c.getUTCDate(), MEET.hour, MEET.minute);
+      if (c.getUTCDay() === MEET.day && t > now) return t;
+    }
+  }
+  const cdDays = document.getElementById("cdDays"), cdTime = document.getElementById("cdTime");
+  const pad = n => String(n).padStart(2, "0");
+  function tick() {
+    const left = Math.max(0, nextMeet(Date.now()) - Date.now());
+    const d = Math.floor(left / 864e5), h = Math.floor(left / 36e5) % 24, m = Math.floor(left / 6e4) % 60, s = Math.floor(left / 1e3) % 60;
+    cdDays.textContent = d > 0 ? d + (d === 1 ? " day" : " days") : "today";
+    cdTime.textContent = pad(h) + ":" + pad(m) + ":" + pad(s);
+  }
+  tick(); setInterval(tick, 1000);
 
   /* ---- ransom-note letters ---- */
   const styles = [
