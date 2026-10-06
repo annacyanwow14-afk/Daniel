@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Daniel, do you love me?</title>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Courier+Prime:wght@400;700&family=Old+Standard+TT:wght@700&family=Playfair+Display:wght@900&family=Special+Elite&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #120a10;
+    --paper: #f3e6d3;
+    --blush: #e9a3bd;
+    --rose: #c8325a;
+    --wine: #5a1230;
+    --glass: rgba(255, 210, 235, 0.55);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 30% 20%, #2a1020 0%, var(--ink) 65%);
+    font-family: "Special Elite", "Courier New", monospace;
+    color: var(--paper);
+    overflow-x: hidden;
+  }
+  /* film grain */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .35; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* jewel-case frame */
+  .case {
+    position: relative; width: min(94vw, 470px); margin: 24px 0;
+    padding: 44px 26px 34px; min-height: 560px;
+    border: 2px solid var(--glass); border-radius: 12px;
+    background:
+      radial-gradient(circle at 50% 52%, transparent 0 34px, rgba(255,255,255,.08) 35px 36px, transparent 37px 120px, rgba(255,255,255,.07) 121px 122px, transparent 123px),
+      rgba(30, 12, 24, .7);
+    box-shadow: 0 0 0 6px rgba(255,210,235,.08), 0 30px 80px rgba(0,0,0,.6), inset 0 0 40px rgba(233,163,189,.12);
+    overflow: hidden;
+  }
+  .case::before { /* hinge ticks */
+    content: ""; position: absolute; left: 10px; top: 14px; bottom: 14px; width: 6px;
+    background: repeating-linear-gradient(to bottom, var(--glass) 0 2px, transparent 2px 14px); opacity: .6;
+  }
+
+  /* collage pieces */
+  .piece { position: absolute; }
+  .stamp {
+    top: 14px; right: 16px; width: 92px; height: 112px; transform: rotate(5deg);
+    background: #f2b7ae; padding: 12px; color: var(--wine); text-align: center;
+    font-size: 11px; line-height: 1.1;
+  }
+  .stamp::before { content: ""; position: absolute; inset: 0; border: 6px dotted #1e0c18; }
+  .stamp svg { width: 46px; height: 46px; display: block; margin: 6px auto 4px; }
+  .tag {
+    left: 22px; top: 22px; background: var(--paper); color: var(--ink); padding: 6px 12px;
+    font-size: 12px; transform: rotate(-6deg); border-radius: 2px;
+  }
+
+  /* ransom-note headline */
+  .stage { position: relative; z-index: 2; text-align: center; margin-top: 64px; }
+  .line { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; margin-bottom: 10px; }
+  .line.big { margin-bottom: 14px; }
+  .l {
+    display: inline-block; padding: 2px 8px 0; line-height: 1.15;
+    font-size: 38px; box-shadow: 2px 3px 6px rgba(0,0,0,.45);
+  }
+  .line.big .l { font-size: 52px; padding: 2px 10px 0; }
+  .l.sp { background: none !important; box-shadow: none; width: 14px; padding: 0; }
+
+  /* buttons */
+  .buttons { position: relative; height: 96px; margin-top: 26px; z-index: 3; }
+  button {
+    position: absolute; top: 18px; border: none; cursor: pointer;
+    font-family: "Special Elite", monospace; font-size: 18px; padding: 12px 30px;
+    transition: transform .2s ease; box-shadow: 3px 5px 10px rgba(0,0,0,.5);
+  }
+  button:focus-visible { outline: 2px solid var(--blush); outline-offset: 4px; }
+  #yes { left: 14%; background: var(--rose); color: #fff2f5; transform: rotate(-3deg); }
+  #yes:hover { transform: rotate(-1deg) scale(1.06); }
+  #no { left: 56%; background: var(--paper); color: #5a4a4a; transform: rotate(3deg); z-index: 20; transition: left .25s ease, top .25s ease, transform .2s; }
+  #no.fly { position: fixed; }
+
+  .hint { position: relative; z-index: 3; margin-top: 8px; text-align: center; font-size: 13px; color: var(--blush); opacity: .85; }
+
+  /* little references (edit the text in REFS below) */
+  .ref { z-index: 1; max-width: 138px; padding: 12px 14px 14px; font-size: 12px; line-height: 1.35; box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
+  .ref.a { left: 14px; bottom: 120px; background: #ecd3b4; color: #5d4332; transform: rotate(-5deg);
+    clip-path: polygon(0 4%, 8% 0, 20% 4%, 35% 0, 52% 4%, 70% 0, 86% 4%, 100% 1%, 99% 50%, 100% 97%, 82% 100%, 60% 96%, 40% 100%, 18% 96%, 0 100%, 1% 50%); }
+  .ref.b { right: 14px; bottom: 210px; background: var(--blush); color: var(--wine); transform: rotate(4deg); border-radius: 2px; }
+  .ref.b::before { content: ""; position: absolute; left: 50%; top: -9px; width: 46px; height: 16px; margin-left: -23px; background: rgba(243,230,211,.7); transform: rotate(-3deg); }
+  .ref.c { left: 22px; bottom: 28px; background: var(--ink); color: var(--paper); border: 1px solid var(--blush); transform: rotate(3deg); }
+  .done .ref { display: none; }
+
+  /* cutout pops up */
+  .me { display: none; position: absolute; z-index: 4; left: 46%; bottom: -4px; width: 66%; max-width: 330px; transform: translateX(-50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
+  .done .me { display: block; animation: pop .7s .25s cubic-bezier(.2, 1.5, .4, 1) both; }
+  @keyframes pop { from { transform: translate(-50%, 105%) rotate(-6deg); } to { transform: translate(-50%, 0) rotate(0); } }
+
+  /* cat in the corner */
+  .cat { display: none; position: absolute; z-index: 6; right: 10px; bottom: 10px; width: 92px; height: auto; transform: rotate(-4deg); filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+  .done .cat { display: block; animation: slap .45s .9s cubic-bezier(.2, 1.6, .4, 1) both; }
+
+  /* reply state */
+  .reply { display: none; position: relative; z-index: 5; text-align: center; margin-top: 56px; }
+  .reply .note {
+    display: inline-block; margin-top: 20px; padding: 12px 18px; background: var(--paper); color: var(--wine);
+    transform: rotate(-2deg); box-shadow: 3px 5px 10px rgba(0,0,0,.5); font-size: 15px;
+  }
+  .done .stage, .done .buttons, .done .hint { display: none; }
+  .done .reply { display: block; animation: slap .45s cubic-bezier(.2, 1.6, .4, 1); }
+  @keyframes slap { from { transform: scale(1.5) rotate(-6deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  /* falling paper bits */
+  .bit { position: fixed; top: -40px; pointer-events: none; z-index: 50; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(115vh) rotate(540deg); } }
+
+  @media (max-width: 420px) {
+    .l { font-size: 32px; } .line.big .l { font-size: 44px; }
+    .stamp { width: 78px; height: 96px; }
+    .ref { max-width: 120px; font-size: 10px; }
+    .cat { width: 76px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bit { display: none; } .done .reply, .done .me, .done .cat { animation: none; } }
+</style>
+</head>
+<body>
+  <main class="case" id="case">
+    <div class="piece tag">for Daniel</div>
+
+    <div class="piece stamp" aria-hidden="true">
+      <div>postage paid</div>
+      <svg viewBox="0 0 24 24"><path fill="#c8325a" d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z"/></svg>
+      <div>20c</div>
+    </div>
+
+    <section class="stage">
+      <div class="line" data-ransom="Daniel,"></div>
+      <div class="line big" data-ransom="do you"></div>
+      <div class="line big" data-ransom="love me?"></div>
+    </section>
+
+    <div class="buttons">
+      <button id="yes">Yes</button>
+      <button id="no">No</button>
+    </div>
+    <p class="hint">no is currently out of order.</p>
+
+    <section class="reply" aria-live="polite">
+      <div class="line big" data-ransom="WOOO"></div>
+      <div class="line big" data-ransom="me too."></div>
+    </section>
+
+    <img class="me" alt="" src="me.webp" />
+    <img class="cat" alt="" src="cat.gif" />
+  </main>
+
+<script>
+  /* ---- edit these ---- */
+  const BITS = ["#c8325a", "#e9a3bd", "#f3e6d3", "#8c1d3f", "#f2b7ae"];
+
+
+  /* ---- little references: put your inside jokes here ---- */
+  const REFS = [
+    { cls: "a", text: "Pipe down handsome, you might get cracked." },
+    { cls: "b", text: "Congrats on your big penis!" },
+    { cls: "c", text: "May I bounce on it, perchance." },
+  ];
+  REFS.forEach(r => {
+    const d = document.createElement("div");
+    d.className = "piece ref " + r.cls;
+    d.textContent = r.text;
+    document.getElementById("case").appendChild(d);
+  });
+
+  /* ---- ransom-note letters ---- */
+  const styles = [
+    { f: "'Playfair Display', serif", bg: "#f3e6d3", c: "#120a10" },
+    { f: "'Abril Fatface', serif",    bg: "#120a10", c: "#f3e6d3", b: "1px solid #e9a3bd" },
+    { f: "'Old Standard TT', serif",  bg: "#e9a3bd", c: "#3a0d1c" },
+    { f: "'Special Elite', monospace",bg: "#f3e6d3", c: "#c8325a" },
+    { f: "'Playfair Display', serif", bg: "#c8325a", c: "#fff2f5" },
+    { f: "'Abril Fatface', serif",    bg: "#ecd3b4", c: "#5a1230" },
+  ];
+  document.querySelectorAll("[data-ransom]").forEach((el, row) => {
+    [...el.dataset.ransom].forEach((ch, i) => {
+      const s = document.createElement("span");
+      s.className = "l";
+      if (ch === " ") { s.classList.add("sp"); el.appendChild(s); return; }
+      const st = styles[(i * 5 + row * 3 + ch.charCodeAt(0)) % styles.length];
+      s.textContent = ch;
+      s.style.cssText = `font-family:${st.f};background:${st.bg};color:${st.c};${st.b ? "border:" + st.b : ""};` +
+        `transform:rotate(${((i * 7 + row * 4) % 9) - 4}deg) translateY(${((i * 5) % 7) - 3}px)`;
+      el.appendChild(s);
+    });
+  });
+
+  /* ---- No button runs away ---- */
+  const caseEl = document.getElementById("case");
+  const no = document.getElementById("no");
+  const yes = document.getElementById("yes");
+  function dodge(e) {
+    if (e) e.preventDefault();
+    const c = caseEl.getBoundingClientRect(), b = no.getBoundingClientRect();
+    no.classList.add("fly");
+    const minX = Math.max(c.left + 12, 8), maxX = Math.min(c.right, innerWidth) - b.width - 12;
+    const minY = Math.max(c.top + 120, 8), maxY = Math.min(c.bottom, innerHeight) - b.height - 12;
+    no.style.left = minX + Math.random() * Math.max(maxX - minX, 0) + "px";
+    no.style.top = minY + Math.random() * Math.max(maxY - minY, 0) + "px";
+    no.style.transform = `rotate(${Math.random() * 16 - 8}deg)`;
+  }
+  no.addEventListener("pointerenter", dodge);
+  no.addEventListener("touchstart", dodge, { passive: false });
+  no.addEventListener("click", dodge);
+
+  /* ---- Yes: torn-paper confetti ---- */
+  yes.addEventListener("click", () => {
+    caseEl.classList.add("done");
+    no.style.display = "none";
+    for (let i = 0; i < 60; i++) {
+      const b = document.createElement("div");
+      b.className = "bit";
+      const w = 8 + Math.random() * 14;
+      b.style.cssText = `left:${Math.random() * 100}vw;width:${w}px;height:${w * (0.6 + Math.random() * 0.8)}px;` +
+        `background:${BITS[i % BITS.length]};animation-duration:${2.5 + Math.random() * 2.5}s;animation-delay:${Math.random() * 0.8}s;` +
+        `clip-path:polygon(0 8%,40% 0,100% 12%,92% 100%,50% 88%,6% 100%)`;
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 6500);
+    }
+  });
+</script>
+</body>
+</html>
