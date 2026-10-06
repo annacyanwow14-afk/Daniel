@@ -93,15 +93,15 @@
 
   .hint { position: relative; z-index: 3; margin-top: 8px; text-align: center; font-size: 13px; color: var(--blush); opacity: .85; }
 
-  /* little postage scraps (phrases live in PHRASES below) */
-  .refs { position: absolute; left: 14px; right: 14px; bottom: 16px; z-index: 1; display: flex; align-items: flex-end; gap: 8px; }
-  .ref { flex: 1 1 0; min-width: 0; padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
+  /* little postage scraps (phrases live in PHRASES below; positions are randomized in JS) */
+  .refs { position: absolute; left: 12px; right: 12px; bottom: 14px; height: 170px; z-index: 1; pointer-events: none; }
+  .ref { position: absolute; width: clamp(118px, 36%, 170px); padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; transform: rotate(var(--r, 0deg)); box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
   .ref.long { font-size: 10.5px; }
-  .ref.a { background: #ecd3b4; color: #5d4332; transform: rotate(-4deg); margin-bottom: 14px;
+  .ref.a { background: #ecd3b4; color: #5d4332;
     clip-path: polygon(0 4%, 8% 0, 20% 4%, 35% 0, 52% 4%, 70% 0, 86% 4%, 100% 1%, 99% 50%, 100% 97%, 82% 100%, 60% 96%, 40% 100%, 18% 96%, 0 100%, 1% 50%); }
-  .ref.b { position: relative; background: var(--blush); color: var(--wine); transform: rotate(3deg); border-radius: 2px; }
+  .ref.b { background: var(--blush); color: var(--wine); border-radius: 2px; }
   .ref.b::before { content: ""; position: absolute; left: 50%; top: -9px; width: 46px; height: 16px; margin-left: -23px; background: rgba(243,230,211,.7); transform: rotate(-3deg); }
-  .ref.c { background: var(--ink); color: var(--paper); border: 1px solid var(--blush); transform: rotate(-2deg); margin-bottom: 22px; }
+  .ref.c { background: var(--ink); color: var(--paper); border: 1px solid var(--blush); }
   .done .refs { display: none; }
 
   /* cutout pops up */
@@ -131,6 +131,7 @@
     .l { font-size: 32px; } .line.big .l { font-size: 44px; }
     .stamp { width: 96px; height: 118px; font-size: 10px; }
     .ref { font-size: 10px; padding: 9px 9px 11px; } .ref.long { font-size: 9.5px; }
+    .refs { height: 160px; }
     .cat { width: 76px; }
   }
   @media (prefers-reduced-motion: reduce) { .bit { display: none; } .done .reply, .done .me, .done .cat { animation: none; } }
@@ -198,10 +199,23 @@
   }
   const scraps = document.createElement("div");
   scraps.className = "refs";
+  const shuffle = arr => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+  const slots = shuffle([2, 33, 62]);          /* rough left positions (%), shuffled */
+  const looks = shuffle(["a", "b", "c"]);      /* paper styles, shuffled */
   pool.slice(0, 3).forEach((text, i) => {
     const d = document.createElement("div");
-    d.className = "ref " + "abc"[i] + (text.length > 42 ? " long" : "");
+    d.className = "ref " + looks[i] + (text.length > 42 ? " long" : "");
     d.textContent = text;
+    d.style.left = Math.min(64, Math.max(0, slots[i] + Math.random() * 10 - 5)) + "%";
+    d.style.bottom = 4 + Math.random() * 48 + "px";
+    d.style.setProperty("--r", (Math.random() * 18 - 9).toFixed(1) + "deg");
+    d.style.zIndex = 1 + Math.floor(Math.random() * 3);
     scraps.appendChild(d);
   });
   document.getElementById("case").appendChild(scraps);
