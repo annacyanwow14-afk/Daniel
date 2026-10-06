@@ -95,7 +95,9 @@
 
   /* little postage scraps (phrases live in PHRASES below; positions are randomized in JS) */
   .refs { position: absolute; left: 12px; right: 12px; bottom: 14px; height: 170px; z-index: 1; pointer-events: none; }
-  .ref { position: absolute; width: clamp(118px, 36%, 170px); padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; transform: rotate(var(--r, 0deg)); box-shadow: 2px 4px 8px rgba(0,0,0,.5); }
+  .ref { position: absolute; width: clamp(118px, 36%, 170px); padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; transform: rotate(var(--r, 0deg)); box-shadow: 2px 4px 8px rgba(0,0,0,.5);
+    pointer-events: auto; cursor: pointer; transition: transform .25s cubic-bezier(.2, 1.4, .4, 1), box-shadow .25s ease; }
+  .ref:hover, .ref.up { z-index: 20 !important; transform: rotate(0deg) scale(1.12); box-shadow: 5px 12px 20px rgba(0,0,0,.65); }
   .ref.long { font-size: 10.5px; }
   .ref.a { background: #ecd3b4; color: #5d4332;
     clip-path: polygon(0 4%, 8% 0, 20% 4%, 35% 0, 52% 4%, 70% 0, 86% 4%, 100% 1%, 99% 50%, 100% 97%, 82% 100%, 60% 96%, 40% 100%, 18% 96%, 0 100%, 1% 50%); }
@@ -216,6 +218,10 @@
     d.style.bottom = 4 + Math.random() * 48 + "px";
     d.style.setProperty("--r", (Math.random() * 18 - 9).toFixed(1) + "deg");
     d.style.zIndex = 1 + Math.floor(Math.random() * 3);
+    d.addEventListener("click", () => {          /* tap/click also brings a scrap to the front (for phones) */
+      scraps.querySelectorAll(".up").forEach(x => { if (x !== d) x.classList.remove("up"); });
+      d.classList.toggle("up");
+    });
     scraps.appendChild(d);
   });
   document.getElementById("case").appendChild(scraps);
