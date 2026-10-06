@@ -102,7 +102,7 @@
   .done .ref { display: none; }
 
   /* cutout pops up */
-  .me { display: none; position: absolute; z-index: 4; left: 46%; bottom: -4px; width: 66%; max-width: 330px; transform: translateX(-50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
+  .me { display: none; position: absolute; z-index: 4; left: 46%; bottom: -4px; width: auto; height: auto; max-height: 310px; max-width: 90%; transform: translateX(-50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
   .done .me { display: block; animation: pop .7s .25s cubic-bezier(.2, 1.5, .4, 1) both; }
   @keyframes pop { from { transform: translate(-50%, 105%) rotate(-6deg); } to { transform: translate(-50%, 0) rotate(0); } }
 
@@ -138,7 +138,7 @@
     <div class="piece tag">for Daniel</div>
 
     <div class="piece stamp" aria-hidden="true">
-      <div>see you in</div>
+      <div>see him in</div>
       <svg viewBox="0 0 24 24"><path fill="#c8325a" d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z"/></svg>
       <div id="cdDays" class="cd-days">--</div>
       <div id="cdTime" class="cd-time">--:--:--</div>
@@ -169,6 +169,10 @@
   /* ---- edit these ---- */
   const BITS = ["#c8325a", "#e9a3bd", "#f3e6d3", "#8c1d3f", "#f2b7ae"];
 
+
+  /* ---- random photo (add more file names here) ---- */
+  const PHOTOS = ["me.webp", "me2.webp", "me3.webp", "me4.webp", "me5.webp"];
+  document.querySelector(".me").src = PHOTOS[Math.floor(Math.random() * PHOTOS.length)];
 
   /* ---- little references: put your inside jokes here ---- */
   const REFS = [
