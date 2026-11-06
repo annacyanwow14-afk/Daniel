@@ -154,7 +154,7 @@
   .done .cat { display: block; animation: slap .45s .9s cubic-bezier(.2, 1.6, .4, 1) both; }
 
   /* reply state */
-  .reply { display: none; position: relative; z-index: 5; text-align: center; margin-top: 56px; }
+  .reply { display: none; position: relative; z-index: 5; text-align: center; margin-top: 112px; }
   .reply .note {
     display: inline-block; margin-top: 20px; padding: 12px 18px; background: var(--paper); color: var(--wine);
     transform: rotate(-2deg); box-shadow: 3px 5px 10px rgba(0,0,0,.5); font-size: 15px;
@@ -183,7 +183,7 @@
 
     <div class="piece stamp" aria-hidden="true">
       <svg viewBox="0 0 24 24"><path fill="#c8325a" d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z"/></svg>
-      <div class="stamp-msg">I miss you,<br>I'll see you soon</div>
+      <div class="stamp-msg" id="stampMsg">I miss you,<br>I'll see you soon</div>
     </div>
 
     <section class="stage">
@@ -214,7 +214,28 @@
 
   /* ---- random photo (add more file names here) ---- */
   const PHOTOS = ["me.webp", "me2.webp", "me3.webp", "wink.webp", "glasses.webp", "tongue.webp", "warm.webp", "faire_cutout.webp", "earbuds.webp", "jacket.webp"];
+
   document.querySelector(".me").src = PHOTOS[Math.floor(Math.random() * PHOTOS.length)];
+
+  /* ---- stamp message changes with the time of day (uses his device's clock) ---- */
+  const STAMP_MSGS = {
+    morning: ["good morning, handsome", "rise and shine, handsome"],      /* 5am - 11am */
+    day:     ["I miss you, I'll see you soon", "thinking of you"],         /* 11am - 5pm */
+    evening: ["hope your day was good", "good evening, handsome"],         /* 5pm - 10pm */
+    night:   ["go to sleep, I love you", "goodnight, handsome"],           /* 10pm - 5am */
+  };
+  const stampMsgEl = document.getElementById("stampMsg");
+  let stampSlotNow = null;
+  function updateStampMsg() {
+    const h = new Date().getHours();
+    const slot = h >= 5 && h < 11 ? "morning" : h >= 11 && h < 17 ? "day" : h >= 17 && h < 22 ? "evening" : "night";
+    if (slot === stampSlotNow) return;               /* same part of the day: leave it alone */
+    stampSlotNow = slot;
+    const list = STAMP_MSGS[slot];
+    stampMsgEl.textContent = list[Math.floor(Math.random() * list.length)];
+  }
+  updateStampMsg();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) updateStampMsg(); });   /* app left open all day */
 
   /* ---- postage scraps: 3 random phrases from the active list each time ---- */
   const SWEET = [
