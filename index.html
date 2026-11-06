@@ -4,6 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Daniel, do you love me?</title>
+
+<!-- home screen app -->
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="theme-color" content="#120a10" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="For Daniel" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Courier+Prime:wght@400;700&family=Old+Standard+TT:wght@700&family=Playfair+Display:wght@900&family=Special+Elite&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -53,7 +63,7 @@
   /* collage pieces */
   .piece { position: absolute; }
   .stamp {
-    top: 14px; right: 14px; width: 108px; height: 128px; transform: rotate(5deg);
+    top: 14px; right: 14px; width: 108px; height: 128px; transform: rotate(5deg); z-index: 5;
     background: #f2b7ae; padding: 12px 10px; color: var(--wine); text-align: center;
     font-size: 11px; line-height: 1.1;
   }
@@ -92,7 +102,7 @@
 
   .hint { position: relative; z-index: 3; margin-top: 8px; text-align: center; font-size: 13px; color: var(--blush); opacity: .85; }
 
-  /* little postage scraps (phrases live in PHRASES below; positions are randomized in JS) */
+  /* little postage scraps (phrases live in SWEET / SPICY below; positions are randomized in JS) */
   .refs { position: absolute; left: 12px; right: 12px; bottom: 14px; height: 170px; z-index: 1; pointer-events: none; }
   .ref { position: absolute; width: clamp(118px, 36%, 170px); padding: 12px 12px 14px; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; transform: rotate(var(--r, 0deg)); box-shadow: 2px 4px 8px rgba(0,0,0,.5);
     pointer-events: auto; cursor: pointer; transition: transform .25s cubic-bezier(.2, 1.4, .4, 1), box-shadow .25s ease; }
@@ -177,27 +187,23 @@
   const PHOTOS = ["me.webp", "me2.webp", "me3.webp", "wink.webp", "glasses.webp", "tongue.webp", "warm.webp", "faire_cutout.webp", "earbuds.webp", "jacket.webp"];
   document.querySelector(".me").src = PHOTOS[Math.floor(Math.random() * PHOTOS.length)];
 
-  /* ---- postage scraps: 3 random phrases from this list each time the page loads ---- */
-  const PHRASES = [
-    "Pipe down handsome, you might get cracked.",
-    "Congrats on your big penis!",
-    "May I bounce on it, perchance.",
-    "I'm not a waitress but ill take your tip",
-    "dont be hard on yourself, be hard in me instead.",
-    "calling me pretty gets you head btw",
+  /* ---- postage scraps: 3 random phrases from the active list each time ---- */
+  const SWEET = [
     "I may not see you everyday but i love you everyday",
     "I will always be grateful to have you in my life",
     "your face is so kissable",
     "iloveyou iloveyou iloveyou",
     "thankyou for making me smile everyday",
   ];
-  const pool = [...PHRASES];
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  const scraps = document.createElement("div");
-  scraps.className = "refs";
+  const SPICY = [
+    "Pipe down handsome, you might get cracked.",
+    "Congrats on your big penis!",
+    "May I bounce on it, perchance.",
+    "I'm not a waitress but ill take your tip",
+    "dont be hard on yourself, be hard in me instead.",
+    "calling me pretty gets you head btw",
+  ];
+
   const shuffle = arr => {
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -205,23 +211,44 @@
     }
     return arr;
   };
-  const slots = shuffle([2, 33, 62]);          /* rough left positions (%), shuffled */
-  const looks = shuffle(["a", "b", "c"]);      /* paper styles, shuffled */
-  pool.slice(0, 3).forEach((text, i) => {
-    const d = document.createElement("div");
-    d.className = "ref " + looks[i] + (text.length > 42 ? " long" : "");
-    d.textContent = text;
-    d.style.left = Math.min(64, Math.max(0, slots[i] + Math.random() * 10 - 5)) + "%";
-    d.style.bottom = 4 + Math.random() * 48 + "px";
-    d.style.setProperty("--r", (Math.random() * 18 - 9).toFixed(1) + "deg");
-    d.style.zIndex = 1 + Math.floor(Math.random() * 3);
-    d.addEventListener("click", () => {          /* tap/click also brings a scrap to the front (for phones) */
-      scraps.querySelectorAll(".up").forEach(x => { if (x !== d) x.classList.remove("up"); });
-      d.classList.toggle("up");
+
+  let scraps = null;
+  function renderScraps(list) {
+    if (scraps) scraps.remove();
+    scraps = document.createElement("div");
+    scraps.className = "refs";
+    const slots = shuffle([2, 33, 62]);          /* rough left positions (%), shuffled */
+    const looks = shuffle(["a", "b", "c"]);      /* paper styles, shuffled */
+    shuffle([...list]).slice(0, 3).forEach((text, i) => {
+      const d = document.createElement("div");
+      d.className = "ref " + looks[i] + (text.length > 42 ? " long" : "");
+      d.textContent = text;
+      d.style.left = Math.min(64, Math.max(0, slots[i] + Math.random() * 10 - 5)) + "%";
+      d.style.bottom = 4 + Math.random() * 48 + "px";
+      d.style.setProperty("--r", (Math.random() * 18 - 9).toFixed(1) + "deg");
+      d.style.zIndex = 1 + Math.floor(Math.random() * 3);
+      d.addEventListener("click", () => {        /* tap/click also brings a scrap to the front (for phones) */
+        scraps.querySelectorAll(".up").forEach(x => { if (x !== d) x.classList.remove("up"); });
+        d.classList.toggle("up");
+      });
+      scraps.appendChild(d);
     });
-    scraps.appendChild(d);
+    document.getElementById("case").appendChild(scraps);
+  }
+  renderScraps(SWEET);
+
+  /* ---- secret: tap the stamp 3 times to swap sweet <-> spicy ---- */
+  let spicy = false, taps = 0, tapTimer;
+  document.querySelector(".stamp").addEventListener("click", () => {
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => (taps = 0), 1200);   /* taps must be within ~1.2s of each other */
+    if (taps >= 3) {
+      taps = 0;
+      spicy = !spicy;
+      renderScraps(spicy ? SPICY : SWEET);
+    }
   });
-  document.getElementById("case").appendChild(scraps);
 
   /* ---- ransom-note letters ---- */
   const styles = [
